@@ -35,6 +35,18 @@ mod RoleComponent {
             fn grant_owner_role(ref self: ComponentState<TContractState>, address: ContractAddress) {
                 self.accesscontrol.grant_role(OWNER_ROLE, address);
             }
+
+            fn revoke_minter_role(ref self: ComponentState<TContractState>, address: ContractAddress) {
+                self.accesscontrol.revoke_role(MINTER_ROLE, address);
+            }
+
+            fn revoke_offsetter_role(ref self: ComponentState<TContractState>, address: ContractAddress) {
+                self.accesscontrol.revoke_role(OFFSETER_ROLE, address);
+            }
+
+            fn revoke_owner_role(ref self: ComponentState<TContractState>, address: ContractAddress) {
+                self.accesscontrol.revoke_role(OWNER_ROLE, address);
+            }
         }
 
 
