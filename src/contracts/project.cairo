@@ -164,10 +164,12 @@ mod Project {
     #[abi(embed_v0)]
     impl ExternalImpl of super::IExternal<ContractState> {
         fn mint(ref self: ContractState, to: ContractAddress, token_id: u256, value: u256) {
+            self.role.only_minter();
             self.erc1155.mint(to, token_id, value);
         }
 
         fn offset(ref self: ContractState, from: ContractAddress, token_id: u256, value: u256) {
+            self.role.only_offsetter();
             let share_value = self.absorber.cc_to_share(value, token_id);
             self.erc1155.burn(from, token_id, share_value);
         }
@@ -175,8 +177,8 @@ mod Project {
         fn batch_mint(
             ref self: ContractState, to: ContractAddress, token_ids: Span<u256>, values: Span<u256>
         ) {
-            // TODO : Add access control as only the Minter in the list should be able to mint the tokens
             // TODO : Check the avalibility of the ampount of vintage cc_supply for each values.it should be done in the absorber/carbon_handler
+            self.role.only_minter();
             self.erc1155.batch_mint(to, token_ids, values);
         }
 
@@ -187,7 +189,7 @@ mod Project {
             values: Span<u256>
         ) {
             // TODO : Check that the caller is the owner of the value he wnt to burn
-            // TODO : Add access control as only the Offsetter in the list should be able to burn the values
+            self.role.only_offsetter();
             self.erc1155.batch_burn(from, token_ids, values);
         }
 
