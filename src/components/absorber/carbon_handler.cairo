@@ -169,6 +169,8 @@ mod AbsorberComponent {
         fn set_absorptions(
             ref self: ComponentState<TContractState>, times: Span<u64>, absorptions: Span<u64>
         ) {
+            // [Check] Only owner can set absorptions
+            self.role.only_owner();
             // [Check] Times and prices are defined
             assert(times.len() == absorptions.len(), 'Times and absorptions mismatch');
             assert(times.len() > 0, 'Inputs cannot be empty');
@@ -220,6 +222,8 @@ mod AbsorberComponent {
         }
 
         fn set_project_carbon(ref self: ComponentState<TContractState>, project_carbon: u256) {
+            // [Check] Only owner can set project carbon
+            self.role.only_owner();
             // [Event] Update storage
             self.Absorber_project_carbon.write(project_carbon);
 
