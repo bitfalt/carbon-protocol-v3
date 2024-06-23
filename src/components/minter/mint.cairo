@@ -143,6 +143,8 @@ mod MintComponent {
         }
 
         fn set_public_sale_open(ref self: ComponentState<TContractState>, public_sale_open: bool) {
+            // [Check] Owner only
+            self.accesscontrol.assert_only_role(OWNER_ROLE);
             // [Effect] Update storage
             self.Mint_public_sale_open.write(public_sale_open);
 
@@ -156,6 +158,8 @@ mod MintComponent {
         }
 
         fn set_unit_price(ref self: ComponentState<TContractState>, unit_price: u256) {
+            // [Check] Owner only
+            self.accesscontrol.assert_only_role(OWNER_ROLE);
             // [Check] Value not null
             assert(unit_price > 0, 'Invalid unit price');
             // [Effect] Store value
@@ -199,6 +203,8 @@ mod MintComponent {
         fn set_min_money_amount_per_tx(
             ref self: ComponentState<TContractState>, min_money_amount_per_tx: u256
         ) {
+            // [Check] Owner only
+            self.accesscontrol.assert_only_role(OWNER_ROLE);
             // [Check] Value in range
             let max_money_amount_per_tx = self.Mint_max_money_amount.read();
             assert(
