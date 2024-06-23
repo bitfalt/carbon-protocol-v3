@@ -129,7 +129,7 @@ mod Project {
         #[flat]
         UpgradeableEvent: UpgradeableComponent::Event,
         #[flat]
-        AbsorberEvent: AbsorberComponent::Event
+        AbsorberEvent: AbsorberComponent::Event,
         #[flat]
         RoleEvent: RoleComponent::Event
     }
