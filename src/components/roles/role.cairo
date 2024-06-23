@@ -11,7 +11,6 @@ mod RoleComponent {
 
     // External imports
     use openzeppelin::access::accesscontrol::AccessControlComponent;
-    use openzeppelin::access::accesscontrol::DEFAULT_ADMIN_ROLE;
 
     // Internal imports
     use super::{MINTER_ROLE, OFFSETER_ROLE, OWNER_ROLE};
@@ -19,6 +18,14 @@ mod RoleComponent {
     #[storage]
     struct Storage {
         access_control: AccessControlComponent::Storage
+    }
+
+    #[event]
+    #[derive(Drop, PartialEq, starknet::Event)]
+    enum Event {
+        RoleGranted: accesscontrol::Event::RoleGranted,
+        RoleRevoked: accesscontrol::Event::RoleRevoked
+        RoleAdminChanged: accesscontrol::Event::RoleAdminChanged
     }
  
     #[embeddable_as(RoleImpl)]
