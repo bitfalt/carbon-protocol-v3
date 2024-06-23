@@ -56,12 +56,15 @@ mod Project {
     use carbon_v3::components::erc1155::ERC1155Component;
     // Absorber
     use carbon_v3::components::absorber::carbon_handler::AbsorberComponent;
+    // Role
+    use carbon_v3::components::role::role::RoleComponent;
 
     component!(path: ERC1155Component, storage: erc1155, event: ERC1155Event);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
     component!(path: AbsorberComponent, storage: absorber, event: AbsorberEvent);
+    component!(path: RoleComponent, storage: role, event: RoleEvent);
 
     // ERC1155
     impl ERC1155Impl = ERC1155Component::ERC1155Impl<ContractState>;
@@ -82,12 +85,16 @@ mod Project {
         AbsorberComponent::CarbonCreditsHandlerImpl<ContractState>;
     #[abi(embed_v0)]
     impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
+    // Role
+    #[abi(embed_v0)]
+    impl RoleImpl = RoleComponent::RoleImpl<ContractState>;
 
     impl ERC1155InternalImpl = ERC1155Component::InternalImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
     impl SRC5InternalImpl = SRC5Component::InternalImpl<ContractState>;
     impl AbsorberInternalImpl = AbsorberComponent::InternalImpl<ContractState>;
+    impl RoleInternalImpl = RoleComponent::InternalImpl<ContractState>;
 
     // Constants
     const IERC165_BACKWARD_COMPATIBLE_ID: felt252 = 0x80ac58cd;
@@ -106,6 +113,8 @@ mod Project {
         upgradeable: UpgradeableComponent::Storage,
         #[substorage(v0)]
         absorber: AbsorberComponent::Storage,
+        #[substorage(v0)]
+        role: RoleComponent::Storage
     }
 
     #[event]
@@ -121,6 +130,8 @@ mod Project {
         UpgradeableEvent: UpgradeableComponent::Event,
         #[flat]
         AbsorberEvent: AbsorberComponent::Event
+        #[flat]
+        RoleEvent: RoleComponent::Event
     }
 
     mod Errors {
@@ -139,8 +150,11 @@ mod Project {
     ) {
         let base_uri_bytearray: ByteArray = format!("{}", base_uri);
         self.erc1155.initializer(base_uri_bytearray);
+        self.role.initializer();
         self.ownable.initializer(owner);
         self.absorber.initializer(starting_year, number_of_years);
+        self.role.grant_owner_role(owner);
+        self.role.setup_admin_role();
 
         self.src5.register_interface(OLD_IERC1155_ID);
         self.src5.register_interface(IERC165_BACKWARD_COMPATIBLE_ID);
