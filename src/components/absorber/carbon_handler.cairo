@@ -14,6 +14,8 @@ mod AbsorberComponent {
     // Internal imports
     use carbon_v3::components::absorber::interface::{IAbsorber, ICarbonCreditsHandler};
     use carbon_v3::data::carbon_vintage::{CarbonVintage, CarbonVintageType};
+    use carbon_v3::components::role::role::RoleComponent;
+    use RoleComponent::{RoleInternalImpl, RoleInternalTrait};
 
     // Constants
 
@@ -57,9 +59,21 @@ mod AbsorberComponent {
         const INVALID_STARTING_YEAR: felt252 = 'Absorber: invalid starting year';
     }
 
+    #[generate_trait]
+    impl GetRole<
+        TContractState, +HasComponent<TContractState>, +Drop<TContractState>,
+        +RoleComponent::HasComponent<TContractState>
+        > of GetRoleTrait<TContractState> {
+        fn get_role(self: @ComponentState<TContractState>) -> @RoleComponent::ComponentState<TContractState> {
+            let contract = self.get_contract();
+            RoleComponent::HasComponent::<TContractState>::get_component(contract)
+        }
+    }
+
+
     #[embeddable_as(AbsorberImpl)]
     impl Absorber<
-        TContractState, +HasComponent<TContractState>, +Drop<TContractState>
+        TContractState, +HasComponent<TContractState>, +Drop<TContractState>, +RoleComponent::HasComponent<TContractState>
     > of IAbsorber<ComponentState<TContractState>> {
         // Absorption
         fn get_starting_year(self: @ComponentState<TContractState>) -> u64 {
@@ -170,7 +184,9 @@ mod AbsorberComponent {
             ref self: ComponentState<TContractState>, times: Span<u64>, absorptions: Span<u64>
         ) {
             // [Check] Only owner can set absorptions
-            self.role.only_owner();
+            let role = self.get_role();
+            role.only_owner();
+            
             // [Check] Times and prices are defined
             assert(times.len() == absorptions.len(), 'Times and absorptions mismatch');
             assert(times.len() > 0, 'Inputs cannot be empty');
@@ -223,7 +239,8 @@ mod AbsorberComponent {
 
         fn set_project_carbon(ref self: ComponentState<TContractState>, project_carbon: u256) {
             // [Check] Only owner can set project carbon
-            self.role.only_owner();
+            let role = self.get_role();
+            role.only_owner();
             // [Event] Update storage
             self.Absorber_project_carbon.write(project_carbon);
 

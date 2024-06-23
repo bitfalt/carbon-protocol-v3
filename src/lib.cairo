@@ -4,6 +4,7 @@ mod components {
     mod erc1155;
     mod offsetter;
     mod metadata;
+    mod role;
 }
 
 mod data {
