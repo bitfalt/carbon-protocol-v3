@@ -74,5 +74,20 @@ mod RoleComponent {
             self.accesscontrol._set_role_admin(OWNER_ROLE, OWNER_ROLE);
         }
 
+        fn only_minter(self: @ComponentState<TContractState>) {
+            // [Require] The caller must have the minter role
+            self.accesscontrol.assert_only_role(MINTER_ROLE);
+        }
+
+        fn only_offsetter(self: @ComponentState<TContractState>) {
+            // [Require] The caller must have the offsetter role
+            self.accesscontrol.assert_only_role(OFFSETER_ROLE);
+        }
+
+        fn only_owner(self: @ComponentState<TContractState>) {
+            // [Require] The caller must have the owner role
+            self.accesscontrol.assert_only_role(OWNER_ROLE);
+        }
+
 
 }
